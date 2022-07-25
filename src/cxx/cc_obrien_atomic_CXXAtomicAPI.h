@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     cc_obrien_atomic_CXXAtomicAPI
+ * Method:    getBufferAddress
+ * Signature: (Ljava/nio/Buffer;)J
+ */
+JNIEXPORT jlong JNICALL Java_cc_obrien_atomic_CXXAtomicAPI_getBufferAddress
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     cc_obrien_atomic_CXXAtomicAPI
  * Method:    load32
  * Signature: (J)I
  */

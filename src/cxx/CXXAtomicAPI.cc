@@ -16,6 +16,11 @@ static_assert(std::atomic<int64_t>::is_always_lock_free);
 
 extern "C" {
 
+jlong Java_cc_obrien_atomic_CXXAtomicAPI_getBufferAddress(JNIEnv *jenv, jclass, jobject buffer) {
+    auto* ptr = jenv->GetDirectBufferAddress(buffer);
+    return (jlong) (intptr_t) ptr;
+}
+
 jint Java_cc_obrien_atomic_CXXAtomicAPI_load32(JNIEnv *, jclass, jlong addr) {
     auto* a = reinterpret_cast<std::atomic<int32_t>*>(addr);
     return a->load(std::memory_order_acquire);
