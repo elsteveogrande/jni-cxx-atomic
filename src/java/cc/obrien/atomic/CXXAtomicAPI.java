@@ -5,7 +5,7 @@ import java.nio.Buffer;
 import java.nio.file.Files;
 import java.util.Objects;
 
-sealed abstract class CXXAtomicAPI permits CXXAtomic32, CXXAtomic64 {
+sealed abstract class CXXAtomicAPI permits BufferAtomic {
 
     static {
         /*

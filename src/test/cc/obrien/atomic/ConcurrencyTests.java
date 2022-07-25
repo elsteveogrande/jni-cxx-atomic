@@ -3,6 +3,7 @@ package cc.obrien.atomic;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.Buffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ public final class ConcurrencyTests {
         // mmap that file
         final var channel = (FileChannel) Files.newByteChannel(path, WRITE, READ);
         final var mmap = channel.map(READ_WRITE, 0, 8);
-        final long addr = CXXAtomicAPI.getBufferAddress(mmap);
 
         // the start signal for the threads we're about to create
         final var start = new AtomicBoolean(false);
@@ -35,7 +35,7 @@ public final class ConcurrencyTests {
         final var threads = new ArrayList<Thread>(threadCount);
         for (int i = 0; i < threadCount; i++) {
             threads.add(new Thread(() ->
-                ConcurrencyTests.threadFunc(addr, start, threadIters)));
+                ConcurrencyTests.threadFunc(mmap, start, threadIters)));
         }
 
         // Start all the threads, give the OS enough time to get them all started,
@@ -58,11 +58,11 @@ public final class ConcurrencyTests {
         // All threads are done.  Check that the counter is consistent:
         Assertions.assertEquals(
             threadCount * threadIters,
-            new CXXAtomic64(addr).load());
+            new BufferAtomic64(mmap).load());
     }
 
-    private static void threadFunc(long addr, AtomicBoolean start, int iters) {
-        final var a = new CXXAtomic64(addr);
+    private static void threadFunc(Buffer buffer, AtomicBoolean start, int iters) {
+        final var a = new BufferAtomic64(buffer);
 
         //noinspection StatementWithEmptyBody
         while (!start.get()) {
